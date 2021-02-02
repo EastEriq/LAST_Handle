@@ -8,15 +8,17 @@ function loadConfiguration(X,name)
 %  the configuration values of the class are looked for into a file
 %   name.txt. The name of the configuration file could be chosen opportunely
 %   to match the physical name of the device being configured, or its place
-%   and role
+%   and role.
+% If name is omitted, the default name in the class property Config is used. If that is
+%  empty, well, for the moment we search for unknown.txt...
 
 if ~exist('name','var')
     if ~isempty(X.Config)
         name=X.Config;
     else
-    % there should be a canonical way of determing it from the class object
-    %  itself here. Like MountName, CameraName, etc.
-    name='unknown';
+        % there should be a canonical way of determing it from the class object
+        %  itself here. Like MountName, CameraName, etc.
+        name='unknown';
     end
 end
 
