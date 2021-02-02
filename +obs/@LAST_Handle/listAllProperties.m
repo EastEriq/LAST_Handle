@@ -11,14 +11,20 @@ for i=1:numel(x.PropertyList)
     else
         hidden='';
     end
-    if strcmp(prop.GetAccess,'private') && strcmp(prop.GetAccess,'public')
-        readwrite=' readonly';
-    elseif strcmp(prop.GetAccess,'public') && strcmp(prop.GetAccess,'private')
-        readwrite=' writeonly';
+    if strcmp(prop.SetAccess,'private') && strcmp(prop.GetAccess,'public')
+        readwrite=' (readonly)';
+    elseif strcmp(prop.SetAccess,'public') && strcmp(prop.GetAccess,'private')
+        readwrite=' (writeonly)';
     else
         readwrite='';
     end
     h=help([class(X) '.' prop.Name]);
     helpline=h;
-    fprintf('%s%s%s : %s',prop.Name,hidden,readwrite,helpline)
+    % trim redundant repetition of the property name, if it is there
+    redh=[prop.Name ' -  '];
+    nh=strfind(helpline,redh);
+    if ~isempty(nh)
+        helpline=helpline(nh+numel(redh):end);
+    end
+    fprintf('%s\t:%s%s %s',prop.Name,hidden,readwrite,helpline)
 end
