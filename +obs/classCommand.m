@@ -1,4 +1,4 @@
-function Result=classCommand(Obj,Command)
+function Result=classCommand(Obj,Command,IndName)
 % Attempt to have an unified way of accessing properties and methods of
 %  classes which may be either local (=within this matlab session) or
 %  remote (i.e defined in a session connected via a couple of Messengers)
@@ -48,17 +48,31 @@ function Result=classCommand(Obj,Command)
 %         EvalInListener = false;
 %         
 
-if isa(Obj,'obs.remoteClass')
-    Result=Obj.Messenger.query([Obj.Name '.' Command]);
+if nargin<3
+    IndName = '';
+end
+
+if isnumeric(IndName)
+    IndName = sprintf('%s(%d)',Obj.Name,IndName);
+end
+
+if isempty(Obj)
+    Result = NaN;
 else
-    % how to understand if there is going to be a reply without calling the
-    %  command twice?
-    C=Obj; % this way we know that we have a temporary object called 'C', for sure
-    if nargout>0
-        Result=eval(['C.' command]);
-        %Result=eval([Obj.Name '.' Command]);
-        %Result = eval([C.Name '.' Command]);
+    if isa(Obj,'obs.remoteClass')
+        
+        QueryStr = [Obj.Name '.' Command];  % old
+        Result=Obj.Messenger.query(QueryStr);
     else
-        Result = eval(['C.' Command]);
+        % how to understand if there is going to be a reply without calling the
+        %  command twice?
+        C=Obj; % this way we know that we have a temporary object called 'C', for sure
+        if nargout>0
+            Result=eval(['C.' command]);
+            %Result=eval([Obj.Name '.' Command]);
+            %Result = eval([C.Name '.' Command]);
+        else
+            Result = eval(['C.' Command]);
+        end
     end
 end
