@@ -67,7 +67,7 @@ function [ConfigStruct,ConfigFileNameLogical]=getConfigStruct(Obj,Address,Config
                 ConfigPhysical         = Obj.loadConfiguration(ConfigFileNamePhysical, false);
 
                 % merge with ConfigLogical
-                ConfigStruct = Util.struct.mergeStruct(ConfigLogical,ConfigPhysical);
+                ConfigStruct = tools.struct.mergeStruct(ConfigLogical,ConfigPhysical);
             else
                 ConfigStruct = ConfigLogical;
             end
