@@ -19,7 +19,7 @@ function Obj=updatePropFromConfig(Obj,ListProp,ConfigStruct)
         if isfield(ConfigStruct,ListProp{Iprop})
             Obj.(ListProp{Iprop}) = ConfigStruct.(ListProp{Iprop});
         else
-            Obj.LogFile.writeLog(sprintf('Error: Propery %s was not found in ConfigStruct',ListProp{Iprop}));
+            Obj.LogFile.write(sprintf('Error: Property %s was not found in ConfigStruct',ListProp{Iprop}));
         end
     end
 end
