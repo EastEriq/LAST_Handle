@@ -1,17 +1,17 @@
 classdef LAST_Handle < handle
      
     properties (Hidden)
-        Config         % name of the associated configuration file (searched in the configurations directory)
-        ConfigStruct   % The configuration structure loaded from file
-        Verbose=1;     % textual verbosity. 0=suppress, 1=report info, 2=blabber
+        Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
+        Config     % struct of all fields read from the configuration, including those which are only informative 
     end
     
     properties (Hidden, GetAccess = public, SetAccess = protected)
+        Id=''; % a free text logical label, like '1_2_3' (for e.g. pier 1, mount 2, camera 3) 
         LastError='';  % The last error message
     end
     
     methods(Access = ?obs.LAST_Handle)
-        % the definition is here instead than in separate files in a private/
+        % the definitions are here instead than in separate files in a private/
         %  folder: so all subclasses which inherit from LAST_Handle can use
         %  them, otherwise not
         
@@ -30,6 +30,6 @@ classdef LAST_Handle < handle
         end
 
     end
-    
+        
 end
 
