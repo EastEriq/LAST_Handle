@@ -42,7 +42,7 @@ fullpath=fullfile(L.configPath,FileName);
 % read in the file in a cell array T, containing each line
 try
     fid=fopen(fullpath,'r');
-    T=textscan(fid,'%s','Delimiter','');
+    T=textscan(fid,'%s','Delimiter','\n');
     fclose(fid);
     T=T{1};
 catch
