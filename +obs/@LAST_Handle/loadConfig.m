@@ -3,7 +3,7 @@ function loadConfig(L,ConfigFileName)
 %  found to matching properties of L. Copy the entire configuration
 %  structure, including parameters which have been ignored, to L.Config
 %
-% Input  : - A configuration file name to read. The file is searched
+% Input  :  A configuration file name to read. The file is searched
 %           in the canonical configuration path given by L.configPath
 %
 % Example: M.loadConfig('obs.mount.1.create.yml');
@@ -16,7 +16,7 @@ function loadConfig(L,ConfigFileName)
     % scan all the parameters read from the file and assign
     configproperties=fieldnames(C.Data);
     x=metaclass(L);
-    allproperties=x.PropertyList;
+    allproperties={x.PropertyList.Name};
     
     for i=1:numel(configproperties)
         if any(strcmp(allproperties,configproperties{i}))

@@ -8,3 +8,9 @@ function Path=configPath(L)
     %  directories
     % We could make use for instance of class(L) for different subdirs
     Path=fullfile(functionpath,'..','..','..','LAST_config','config');
+    % using coreutils' realpath makes a shorter string, but is not portable.
+    [~,Path]=system(['realpath ' Path]);
+    Path=Path(1:end-1);
+    % Matlab seems not to have a native equivalent, and I don't want to add
+    %  an external dependency like
+    %  https://www.mathworks.com/matlabcentral/fileexchange/28249-getfullpath
