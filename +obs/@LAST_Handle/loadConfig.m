@@ -23,8 +23,15 @@ function loadConfig(L,ConfigFileName)
             % assign the value to the corresponding property
             L.(configproperties{i})=C.Data.(configproperties{i});
         end
-        % copy anything found in C.Data into L.Info. If a field already exists
-        %  in L.Config overwrite its value, if not create a new field
+        % copy anything found in C.Data into L.Info. (we could as well
+        %  decide to copy there only what is not an object property itself)
+        % If a field already exists in L.Config overwrite its value,
+        %  if not create a new field
         L.Config.(configproperties{i})=C.Data.(configproperties{i});
+        % the rationale for overwriting is that I don't see a use case
+        %  in which we may be interested in keeping the history of the
+        %  changes of a config parameters through the lifetime of the
+        %  object, notably the possibly different values at creation and at
+        %  connection
     end
     
