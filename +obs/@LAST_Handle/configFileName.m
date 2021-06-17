@@ -1,7 +1,8 @@
 function f=configFileName(L,sublabel)
 % build the canonical name for the yml configuration file, from class
-%  properties (without the directory path).
-% Example: obs.camera.configFileName('connect') --> 'obs.camera.1_1_2.connect.yml'
+%  properties (with the class subdirectory, but without the general config directory path).
+% Example:  C=obs.camera('1_1_2')
+%           C.configFileName('connect') --> 'obs.camera/obs.camera.1_1_2.connect.yml'
     arguments
         L
         sublabel (1,:) char = ''
@@ -17,4 +18,4 @@ function f=configFileName(L,sublabel)
     else
         b=['.' sublabel];
     end
-    f=[class(L) a b '.yml'];
+    f=fullfile(class(L), [class(L) a b '.yml']);
