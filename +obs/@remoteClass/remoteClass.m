@@ -40,8 +40,6 @@ classdef remoteClass < obs.LAST_Handle
     end
     
     methods (Static)
-        % This shouldn't be among the methods of remoteClass. It should be an
-        % utility of OCS, or of the Messenger class.
         function Port=construct_port_number(Type,Mount,Camera)
             % Construct a port number for device based on its Type, MountNumber and CameraNumber
             %
@@ -50,7 +48,7 @@ classdef remoteClass < obs.LAST_Handle
             % 5, Manager 6
             %       YY -- mount number 1..12
             %       Z  -- camera/focuser number 1..4, 1..2 for computer
-
+            
             % Type Computer DeviceN
             % 2    01       00       - mount on computer 1
             % 3    01       04       - camera 4 on computer 1
@@ -59,11 +57,11 @@ classdef remoteClass < obs.LAST_Handle
             % 5    01       01
             % 6    00       00
             % 6    01       00
-
+            
             if nargin<4
                 Computer = [];
             end
-
+            
             switch lower(Type)
                 case 'mount'
                     TypeInd = 2;
@@ -87,10 +85,10 @@ classdef remoteClass < obs.LAST_Handle
                 otherwise
                     error('Unknown Type option');
             end
-
+            
             % port number for camera
             Port = 20000 + TypeInd.*1000 + Mount.*10 + Camera;
-
+           
         end
             
     end
