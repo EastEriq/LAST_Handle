@@ -6,8 +6,9 @@ classdef LAST_Handle < handle
     end
     
     properties (Hidden, GetAccess = public, SetAccess = protected)
-        Id=''; % a free text logical label, like '1_2_3' (for e.g. pier 1, mount 2, camera 3) 
-        LastError='';  % The last error message
+        Id char; % a free text logical label, like '1_2_3' (for e.g. pier 1, mount 2, camera 3)
+        PhysicalId char; % a physical identifier for the device (if applicable), like a serial number, or the connection port name
+        LastError char;  % The last error message
     end
     
     methods(Access = ?obs.LAST_Handle)
