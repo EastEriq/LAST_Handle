@@ -68,7 +68,7 @@ else
         %  command twice?
         C=Obj; % this way we know that we have a temporary object called 'C', for sure
         if nargout>0
-            Result=eval(['C.' command]);
+            Result=eval(['C.' Command]);
             %Result=eval([Obj.Name '.' Command]);
             %Result = eval([C.Name '.' Command]);
         else
