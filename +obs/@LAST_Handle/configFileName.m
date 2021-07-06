@@ -2,6 +2,8 @@ function f=configFileName(L,sublabel)
 % build the canonical name for the yml configuration file, from class
 %  properties (with the class subdirectory, but without the general config directory path).
 % If sublabel='create', L.Id is used in the filename;
+% If sublabel='createsuper', L.Id is used in the filename, but the
+%                           superclass name is used as prefix
 % if sublabel='connect', L.PhysicalId is used in the filename;
 % if sublabel is anything else, sublabel is used verbatim.
 %
@@ -18,11 +20,19 @@ function f=configFileName(L,sublabel)
         b=['.' sublabel];
     end
     switch sublabel
-        case 'create'
+        case {'create','createsuper'}
             if isempty(L.Id)
                 a='';
             else
                 a=['.' L.Id];
+            end
+            m=metaclass(L);
+            if strcmp(sublabel,'createsuper') && ~isempty(m.SuperclassList.Name)
+            % prefer the superclass name as a prefix
+                c=m.SuperclassList.Name;
+                b='.create';
+            else
+                c=class(L);
             end
         case 'connect'
             if isempty(L.PhysicalId)
@@ -30,7 +40,9 @@ function f=configFileName(L,sublabel)
             else
                 a=['.' L.PhysicalId];
             end
+            c=class(L);
         otherwise
             a='';
+            c=class(L);
     end
-    f=fullfile(class(L), [class(L) a b '.yml']);
+    f=fullfile(c, [c a b '.yml']);
