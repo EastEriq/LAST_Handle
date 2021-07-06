@@ -19,15 +19,34 @@ function loadConfig(L,ConfigFileName)
     allproperties={x.PropertyList.Name};
     
     for i=1:numel(configproperties)
+        data=C.Data.(configproperties{i});
+        % BAD HACK to work around
+        % https://github.com/EranOfek/AstroPack/issues/6#issuecomment-863020665
+        % try to convert cells of numbers into arrays or matrices
+        if isa(data,'cell')
+            try
+                mat=cell2mat(data);
+                if isnumeric(mat)
+                    data=mat;
+                end
+            catch
+            end
+        end
         if any(strcmp(allproperties,configproperties{i}))
             % assign the value to the corresponding property
-            L.(configproperties{i})=C.Data.(configproperties{i});
+            try
+                L.(configproperties{i})=data;
+            catch
+                L.report(sprintf('could not assign configuration data to %s\n',...
+                                 configproperties{i}))
+                             disp(data)
+            end
         end
         % copy anything found in C.Data into L.Info. (we could as well
         %  decide to copy there only what is not an object property itself)
         % If a field already exists in L.Config overwrite its value,
         %  if not create a new field
-        L.Config.(configproperties{i})=C.Data.(configproperties{i});
+        L.Config.(configproperties{i})=data;
         % the rationale for overwriting is that I don't see a use case
         %  in which we may be interested in keeping the history of the
         %  changes of a config parameters through the lifetime of the
