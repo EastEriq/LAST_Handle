@@ -1,9 +1,9 @@
-function Result=classCommand(Obj,Command,IndName)
+function Result=classCommand(Obj,Command,Where)
 % Attempt to have an unified way of accessing properties and methods of
 %  classes which may be either local (=within this matlab session) or
 %  remote (i.e defined in a session connected via a couple of Messengers)
 %
-% Input  : - Either a remoreObject, or some device object.
+% Input  : - Either a remoteObject, or some device object.
 %            This object must have a Name property.
 %          - A string containing a command to execute.
 %          - Where to execute the command: 'base' | 'caller'.
@@ -37,24 +37,22 @@ function Result=classCommand(Obj,Command,IndName)
 %  
 % but usefulness of such contraptions is questionable 
 
-%  result=classCommand(localMount,'goTo(12,34)')
-
-
-% if nargin<3
-%     Where = 'caller';
-% end
-% switch lower(Where)
-%     case 'caller'
-%         EvalInListener = false;
-%         
-
 if nargin<3
-    IndName = '';
+    Where = 'caller';
+end
+switch lower(Where)
+    case 'caller'
+        EvalInListener = false;
 end
 
-if isnumeric(IndName)
-    IndName = sprintf('%s(%d)',Obj.Name,IndName);
-end
+% What was this meant for?
+% if nargin<3
+%     IndName = '';
+% end
+% 
+% if isnumeric(IndName)
+%     IndName = sprintf('%s(%d)',Obj.Name,IndName);
+% end
 
 if isempty(Obj)
     Result = NaN;
