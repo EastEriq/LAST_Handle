@@ -3,8 +3,7 @@ function Result=classCommand(Obj,Command,Where)
 %  classes which may be either local (=within this matlab session) or
 %  remote (i.e defined in a session connected via a couple of Messengers)
 %
-% Input  : - Either a remoteObject, or some device object.
-%            This object must have a Name property.
+% Input  : - Either a remoteClass object, or some local object.
 %          - A string containing a command to execute.
 %          - Where to execute the command: 'base' | 'caller'.
 %            Default is 'caller'.
@@ -17,7 +16,7 @@ function Result=classCommand(Obj,Command,Where)
 %
 %  classCommand(remoteMount,'goTo(12,34)')
 %     translates into:
-%     remoteMount.MessengerQuery('remoteMount.Name.goTo(12,34)')
+%     remoteMount.Messenger.query(['remoteMount.' RemoteName '.goTo(12,34)'])
 %
 % Other examples:  classCommand(localMount,'RA=12.34')
 %                  result=classCommand(remoteMount,'RA')
@@ -31,9 +30,9 @@ function Result=classCommand(Obj,Command,Where)
 %
 %    classCommand(remoteMount,'a=M.Alt; b=M.Az') to make any sense
 %
-% This instead would still work:
+% This instead could still work:
 % 
-%   classCommand(remoteMount,['Alt=' remoteMount '.Alt+10'])
+%   classCommand(remoteMount,['Alt=' remoteMount.RemoteName '.Alt+10'])
 %  
 % but usefulness of such contraptions is questionable 
 
@@ -45,30 +44,21 @@ switch lower(Where)
         EvalInListener = false;
 end
 
-% What was this meant for?
-% if nargin<3
-%     IndName = '';
-% end
-% 
-% if isnumeric(IndName)
-%     IndName = sprintf('%s(%d)',Obj.Name,IndName);
-% end
-
 if isempty(Obj)
     Result = NaN;
 else
     if isa(Obj,'obs.remoteClass')
         
-        QueryStr = [Obj.Name '.' Command];  % old
-        Result=Obj.Messenger.query(QueryStr);
+        QueryStr = [Obj.RemoteName '.' Command];  % old
+        Result=Obj.Messenger.query(QueryStr,EvalInListener);
     else
         % how to understand if there is going to be a reply without calling the
         %  command twice?
         C=Obj; % this way we know that we have a temporary object called 'C', for sure
         if nargout>0
             Result=eval(['C.' Command]);
-            %Result=eval([Obj.Name '.' Command]);
-            %Result = eval([C.Name '.' Command]);
+            %Result=eval([Obj.RemoteName '.' Command]);
+            %Result = eval([C.RemoteName '.' Command]);
         else
             Result = eval(['C.' Command]);
         end
