@@ -34,6 +34,11 @@ classdef remoteClass < obs.LAST_Handle
             end
         end
         
+        function delete(R)
+            % destructor
+            delete(R.Messenger)
+        end
+        
     end
     
 end
