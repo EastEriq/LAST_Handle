@@ -45,22 +45,19 @@ switch lower(Where)
 end
 
 if isempty(Obj)
-    Result = NaN;
+    Result = [];
 else
     if isa(Obj,'obs.remoteClass')
-        
         QueryStr = [Obj.RemoteName '.' Command];  % old
-        Result=Obj.Messenger.query(QueryStr,EvalInListener);
+        Result = Obj.Messenger.query(QueryStr,EvalInListener);
     else
         % how to understand if there is going to be a reply without calling the
         %  command twice?
         C=Obj; % this way we know that we have a temporary object called 'C', for sure
         if nargout>0
-            Result=eval(['C.' Command]);
-            %Result=eval([Obj.RemoteName '.' Command]);
-            %Result = eval([C.RemoteName '.' Command]);
-        else
             Result = eval(['C.' Command]);
+        else
+            eval(['C.' Command]);
         end
     end
 end
