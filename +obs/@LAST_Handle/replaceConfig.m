@@ -5,7 +5,9 @@ function replaceConfig(L,FileName,Keys,NewValues)
 %  in memory and performing string substitutions; it may not work for 
 %  complex datatypes
 %
-% Present use case, only to substitute numeric values
+% Present use case, only to substitute numeric values, and only in existing
+%   files. To be considered, also write anew nonexisting files and nonexisting
+%   name-key pairs.
 %
 % Input: FileName the yml config file to work on (without path)
 %        Keys, Values: cells of parameter names and their replacement
@@ -47,6 +49,7 @@ try
     T=T{1};
 catch
     io.msgLog(LogLevel.Error,'reading file ''%s'' failed',FileName);
+    T={};
 end
 
 % search each key in each of the lines of the file, and if found, replace
