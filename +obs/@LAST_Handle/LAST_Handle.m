@@ -18,7 +18,7 @@ classdef LAST_Handle < handle
         
         function report(N,msg)
             % verbose reporting (to be replaced by a proper call to
-            %  Astropack logger)
+            %  AstroPack logger), like N.LogFile.write(msg)
             if N.Verbose
                 fprintf(msg)
             end
