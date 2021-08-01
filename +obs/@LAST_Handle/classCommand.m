@@ -49,7 +49,13 @@ if isempty(Obj)
 else
     if isa(Obj,'obs.remoteClass')
         QueryStr = [Obj.RemoteName '.' Command];  % old
+        % switch always CallbackRespond to true for the (blocking) query
+        respond=Obj.Messenger.CallbackRespond;
+        Obj.Messenger.CallbackRespond=false;
+        %
         Result = Obj.Messenger.query(QueryStr,EvalInListener);
+        % restore original CallbackRespond state
+        Obj.Messenger.CallbackRespond=respond;
     else
         % how to understand if there is going to be a reply without calling the
         %  command twice?
