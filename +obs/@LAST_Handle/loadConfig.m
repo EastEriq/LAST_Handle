@@ -11,8 +11,17 @@ function loadConfig(L,ConfigFileName)
     C=Configuration;
     % fields C.Path and C.External, whatever they are for, are not used
     %  here
-    C.loadFile(fullfile(L.configPath,ConfigFileName),'Field',false);
-    
+
+    % check for the existence of the configuration file and report its
+    %  absence with our devices. C.loadFile would do it too, but with a lot
+    %  of undesired blabber.
+    configfile=fullfile(L.configPath,ConfigFileName);
+    if isfile(configfile)
+        C.loadFile(configfile,'Field',false);
+    else
+        L.reportError(sprintf('Expected configuration %s not found, using default values',...
+                              ConfigFileName))
+    end
     % scan all the parameters read from the file and assign
     configproperties=fieldnames(C.Data);
     x=metaclass(L);
