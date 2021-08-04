@@ -16,18 +16,18 @@ classdef LAST_Handle < handle
         %  folder: so all subclasses which inherit from LAST_Handle can use
         %  them, otherwise not
         
-        function report(N,msg)
+        function report(L,msg)
             % verbose reporting (to be replaced by a proper call to
             %  AstroPack logger), like N.LogFile.write(msg)
-            if N.Verbose
-                fprintf(msg)
+            if L.Verbose
+                fprintf([sprintf('{%s} ',class(L)),char(msg)]) % concatenate to handle \n in msg
             end
         end
 
-        function reportError(I,msg)
+        function reportError(L,msg)
             % report on stdout and set LastError, with the same argument
-            I.LastError=msg;
-            I.report([msg,'\n'])
+            L.LastError=msg;
+            L.report([msg,'\n'])
         end
 
     end
