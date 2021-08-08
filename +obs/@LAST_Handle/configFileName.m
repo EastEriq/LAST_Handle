@@ -20,7 +20,7 @@ function f=configFileName(L,sublabel)
         b=['.' sublabel];
     end
     switch sublabel
-        case {'create','createsuper'}
+        case {'create','createsuper','destroy'}
             if isempty(L.Id)
                 a='';
             else
@@ -34,7 +34,7 @@ function f=configFileName(L,sublabel)
             else
                 c=class(L);
             end
-        case 'connect'
+        case {'connect','disconnect'}
             if isempty(L.PhysicalId)
                 a='';
             else
