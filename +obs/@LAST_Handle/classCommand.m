@@ -37,7 +37,7 @@ function Result=classCommand(Obj,Command,Where)
 % but usefulness of such contraptions is questionable 
 
 % TODO: instead of Where, for which I don't see any more an use case,
-%       add an argument WaitReply. If false, and nargout=0, use
+%       consider an argument WaitReply. If false, and nargout=0, use
 %       Messenger.send instead of .query [or suppress Result altogether]
 if nargin<3
     Where = 'caller';
