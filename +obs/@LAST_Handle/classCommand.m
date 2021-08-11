@@ -1,4 +1,4 @@
-function Result=classCommand(Obj,Command,Where)
+function Result=classCommand(Obj,Command)
 % Attempt to have an unified way of accessing properties and methods of
 %  classes which may be either local (=within this matlab session) or
 %  remote (i.e defined in a session connected via a couple of Messengers)
@@ -39,13 +39,6 @@ function Result=classCommand(Obj,Command,Where)
 % TODO: instead of Where, for which I don't see any more an use case,
 %       consider an argument WaitReply. If false, and nargout=0, use
 %       Messenger.send instead of .query [or suppress Result altogether]
-if nargin<3
-    Where = 'caller';
-end
-switch lower(Where)
-    case 'caller'
-        EvalInListener = false;
-end
 
 if isempty(Obj)
     Result = [];
@@ -56,7 +49,7 @@ else
         respond=Obj.Messenger.CallbackRespond;
         Obj.Messenger.CallbackRespond=false;
         %
-        Result = Obj.Messenger.query(QueryStr,EvalInListener);
+        Result = Obj.Messenger.query(QueryStr);
         % restore original CallbackRespond state
         Obj.Messenger.CallbackRespond=respond;
     else
