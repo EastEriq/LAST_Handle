@@ -45,21 +45,33 @@ if isempty(Obj)
 else
     if isa(Obj,'obs.remoteClass')
         QueryStr = [Obj.RemoteName '.' Command];  % old
-        % switch always CallbackRespond to true for the (blocking) query
-        respond=Obj.Messenger.CallbackRespond;
-        Obj.Messenger.CallbackRespond=false;
-        %
-        Result = Obj.Messenger.query(QueryStr);
-        % restore original CallbackRespond state
-        Obj.Messenger.CallbackRespond=respond;
+        try
+            % switch always CallbackRespond to true for the (blocking) query
+            respond=Obj.Messenger.CallbackRespond;
+            Obj.Messenger.CallbackRespond=false;
+            %
+            Result = Obj.Messenger.query(QueryStr);
+            % restore original CallbackRespond state
+            Obj.Messenger.CallbackRespond=respond;
+        catch
+            Obj.reportError(sprintf('invalid or uninitialized remote class %s',...
+                Obj.Id))
+            Result=[];
+        end
     else
         % how to understand if there is going to be a reply without calling the
         %  command twice?
-        C=Obj; % this way we know that we have a temporary object called 'C', for sure
-        if nargout>0
-            Result = eval(['C.' Command]);
-        else
-            eval(['C.' Command]);
+        try
+            C=Obj; 
+            % this way we know that we have a temporary object called 'C', for sure
+            if nargout>0
+                Result = eval(['C.' Command]);
+            else
+                eval(['C.' Command]);
+            end
+        catch
+            Obj.reportError(sprintf('invalid class command "%s" to object %s',...
+                Command, Obj.Id))
         end
     end
 end
