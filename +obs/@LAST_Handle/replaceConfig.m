@@ -39,7 +39,8 @@ if isa(NewValues,'char')
     NewValues={NewValues};
 end
 
-fullpath=fullfile(L.configPath,FileName);
+%fullpath=fullfile(L.configPath,FileName);
+fullpath=FileName; % when else FileName used to be only the prefix/file?
 
 % read in the file in a cell array T, containing each line
 try
