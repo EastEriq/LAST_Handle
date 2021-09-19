@@ -46,6 +46,12 @@ else
     if isa(Obj,'obs.remoteClass')
         QueryStr = [Obj.RemoteName '.' Command];  % old
         try
+            % flush eventual input leftovers. Normally there should be no
+            %  unprocessed data in the udp input buffer, but there turns
+            %  to be when the reader is interrupted, or there is
+            %  miscommunication. This is an attempt to reediate a
+            %  posteriori
+            flushinput(Obj.Messenger.StreamResource);
             % switch always CallbackRespond to true for the (blocking) query
             respond=Obj.Messenger.CallbackRespond;
             Obj.Messenger.CallbackRespond=false;
