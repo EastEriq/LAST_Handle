@@ -1,12 +1,15 @@
-function Result=classCommand(Obj,Command)
+function Result=classCommand(Obj,varargin)
 % Attempt to have an unified way of accessing properties and methods of
 %  classes which may be either local (=within this matlab session) or
 %  remote (i.e defined in a session connected via a couple of Messengers)
 %
 % Input  : - Either a remoteClass object, or some local object.
-%          - A string containing a command to execute.
-%          - Where to execute the command: 'base' | 'caller'.
-%            Default is 'caller'.
+%          - A character array, containing the command to execute,
+%             followed by optional arguments.
+%           The input arguments beyonfd the class object are formatted
+%             through sprintf(varargin{:}); hence when there is more 
+%             than one, the first argument has to be a format specifier,
+%             consistent with the types of the following arguments.
 %
 % Examples:
 %
@@ -20,6 +23,7 @@ function Result=classCommand(Obj,Command)
 %
 % Other examples:  classCommand(localMount,'RA=12.34')
 %                  result=classCommand(remoteMount,'RA')
+%                  remoteMount.classCommand('RA=%f',-45.67)
 %
 % In any case, the command to be issued locally or remotely is always
 %  built as obj.command. This limits the possible uses to very simple
@@ -34,7 +38,9 @@ function Result=classCommand(Obj,Command)
 % 
 %   classCommand(remoteMount,['Alt=' remoteMount.RemoteName '.Alt+10'])
 %  
-% but usefulness of such contraptions is questionable 
+% but usefulness of such contraptions is questionable.
+%
+% To suppress output, end the command string with ';'.
 
 % TODO: instead of Where, for which I don't see any more an use case,
 %       consider an argument WaitReply. If false, and nargout=0, use
@@ -43,6 +49,12 @@ function Result=classCommand(Obj,Command)
 if isempty(Obj)
     Result = [];
 else
+    try
+        Command=sprintf(varargin{:});
+    catch
+        Obj.reportError('illegal arguments passed to classCommand')
+        return
+    end
     if isa(Obj,'obs.remoteClass')
         QueryStr = [Obj.RemoteName '.' Command];  % old
         try

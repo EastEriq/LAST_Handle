@@ -16,16 +16,28 @@ classdef LAST_Handle < handle
         %  folder: so all subclasses which inherit from LAST_Handle can use
         %  them, otherwise not
         
-        function report(L,msg)
+        function report(L,varargin)
             % verbose reporting (to be replaced by a proper call to
             %  AstroPack logger), like N.LogFile.write(msg)
+            % Input: a character array, followed by optional arguments
+            % All input arguments are formatted as sprintf(varargin{:});
+            %  hence when there is more than one, the first argument
+            %  has to be a format specifier, consistent with the types of
+            %  the following arguments.
             if L.Verbose
+                msg=sprintf(varargin{:});
                 fprintf([sprintf('{%s} ',class(L)),char(msg)]) % concatenate to handle \n in msg
             end
         end
 
-        function reportError(L,msg)
+        function reportError(L,varargin)
             % report on stdout and set LastError, with the same argument
+            % Input: a character array, followed by optional arguments
+            % All input arguments are formatted as sprintf(varargin{:});
+            %  hence when there is more than one, the first argument
+            %  has to be a format specifier, consistent with the types of
+            %  the following arguments.
+            msg=sprintf(varargin{:});
             L.LastError=msg;
             L.report([msg,'\n'])
         end
