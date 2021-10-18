@@ -72,8 +72,8 @@ else
             % restore original CallbackRespond state
             Obj.Messenger.CallbackRespond=respond;
         catch
-            Obj.reportError(sprintf('invalid or uninitialized remote class %s',...
-                Obj.Id))
+            Obj.reportError('invalid or uninitialized remote class %s',...
+                            Obj.Id)
             Result=[];
         end
     else
@@ -88,8 +88,8 @@ else
                 eval(['C.' Command]);
             end
         catch
-            Obj.reportError(sprintf('invalid class command "%s" to object %s',...
-                Command, Obj.Id))
+            Obj.reportError('invalid class command "%s" to object %s',...
+                             Command, Obj.Id)
         end
     end
 end

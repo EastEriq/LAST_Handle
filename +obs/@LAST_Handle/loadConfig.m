@@ -19,8 +19,8 @@ function loadConfig(L,ConfigFileName)
     if isfile(configfile)
         C.loadFile(configfile,'Field',false);
     else
-        L.reportError(sprintf('Expected configuration %s not found, using default values',...
-                              ConfigFileName))
+        L.reportError('Expected configuration %s not found, using default values',...
+                              ConfigFileName)
     end
     % scan all the parameters read from the file and assign
     configproperties=fieldnames(C.Data);
@@ -46,9 +46,9 @@ function loadConfig(L,ConfigFileName)
             try
                 L.(configproperties{i})=data;
             catch
-                L.report(sprintf('could not assign configuration data to %s\n',...
-                                 configproperties{i}))
-                             disp(data)
+                L.report('could not assign configuration data to %s\n',...
+                                 configproperties{i})
+                disp(data)
             end
         end
         % copy anything found in C.Data into L.Info. (we could as well
