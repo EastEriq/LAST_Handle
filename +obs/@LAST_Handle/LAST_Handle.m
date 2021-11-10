@@ -29,6 +29,22 @@ classdef LAST_Handle < handle
                 fprintf([sprintf('{%s} ',class(L)),char(msg)]) % concatenate to handle \n in msg
             end
         end
+        
+        function reportDebug(L,varargin)
+            % verbose reporting of debug messages, for .Verbose=2
+            % (to be replaced by a proper call to
+            %  AstroPack logger), like N.LogFile.write(msg)
+            % Input: a character array, followed by optional arguments
+            % All input arguments are formatted as sprintf(varargin{:});
+            %  hence when there is more than one, the first argument
+            %  has to be a format specifier, consistent with the types of
+            %  the following arguments.
+            if L.Verbose>1
+                msg=sprintf(varargin{:});
+                fprintf([sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
+                         class(L)),char(msg)]) % concatenate to handle \n in msg
+            end
+        end
 
         function reportError(L,varargin)
             % report on stdout and set LastError, with the same argument
