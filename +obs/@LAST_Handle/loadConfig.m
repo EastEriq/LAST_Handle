@@ -19,7 +19,7 @@ function loadConfig(L,ConfigFileName)
     if isfile(configfile)
         C.loadFile(configfile,'Field',false);
     else
-        L.reportError('Expected configuration %s not found, using default values',...
+        L.report('Expected configuration %s not found, using default values',...
                               ConfigFileName)
     end
     % scan all the parameters read from the file and assign
