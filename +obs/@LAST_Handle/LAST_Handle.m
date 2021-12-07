@@ -1,4 +1,7 @@
 classdef LAST_Handle < handle
+    % The Mother of al LAST classes, which provides some common properties,
+    %  like .Id, .LastError, .Verbose, and some general methods, like
+    %  .loadConfig, .displayProperties
      
     properties (Hidden)
         Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
