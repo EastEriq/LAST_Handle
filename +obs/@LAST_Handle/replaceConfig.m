@@ -66,10 +66,10 @@ for i=1:numel(Keys)
             else
                 comment='';
             end
-            newvalue=sprintf(['%' num2str(length(remain)-length(comment)-3) 's '],...
+            newvalue=sprintf(['%' num2str(length(remain)-length(comment)-3) 's'],...
                              NewValues{i});
             if ~isempty(comment)
-                T{j}=[entry, ': ', newvalue, '#' comment];
+                T{j}=[entry, ': ', newvalue, ' #' comment];
             else
                 T{j}=[entry, ': ', newvalue];
             end
