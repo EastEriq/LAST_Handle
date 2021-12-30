@@ -29,7 +29,9 @@ classdef LAST_Handle < handle
             %  the following arguments.
             if L.Verbose
                 msg=sprintf(varargin{:});
-                fprintf([sprintf('{%s} ',class(L)),char(msg)]) % concatenate to handle \n in msg
+                 % concatenate to handle \n in msg (note: fails if msg
+                 %  contains %; it could be duplicated to %%)
+                fprintf([sprintf('{%s} ',class(L)),char(msg)])
             end
         end
         
