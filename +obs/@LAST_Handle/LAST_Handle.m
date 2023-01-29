@@ -66,6 +66,7 @@ classdef LAST_Handle < handle
             msg=sprintf(varargin{:});
             L.LastError=msg;
             L.report([msg,'\n'])
+            throw(MException("Webapi:" + class(L), msg));
         end
 
     end
