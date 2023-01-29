@@ -6,8 +6,13 @@ classdef LAST_Handle < handle
     properties (Hidden)
         Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
         Config     % struct of all fields read from the configuration, including those which are only informative 
+        Digest; % for LAST_API
     end
-    
+
+    properties (GetAccess=public, SetAccess=public, Description='api')
+        Connected logical = false;
+    end
+
     properties (Hidden, GetAccess = public, SetAccess = protected)
         Id char; % a free text logical label, like '1_2_3' (for e.g. pier 1, mount 2, camera 3)
         PhysicalId char; % a physical identifier for the device (if applicable), like a serial number, or the connection port name
