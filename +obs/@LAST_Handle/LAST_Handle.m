@@ -10,7 +10,8 @@ classdef LAST_Handle < handle
     end
 
     properties (GetAccess=public, SetAccess=public, Description='api')
-        Connected logical = false;
+    % if declared here, children class cannot have a specific setter
+    % Connected logical = false;
     end
 
     properties (Hidden, GetAccess = public, SetAccess = protected)
