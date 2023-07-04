@@ -7,6 +7,7 @@ classdef LAST_Handle < handle
         Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
         Config     % struct of all fields read from the configuration, including those which are only informative 
         Digest; % for LAST_API
+        Logger     % left empty.  outer layers may populate this (e.g. Api)
     end
 
     properties (GetAccess=public, SetAccess=public, Description='api')
@@ -33,11 +34,22 @@ classdef LAST_Handle < handle
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
+            global DefaultLogger
             if L.Verbose
+                if isempty(DefaultLogger)
+                    DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
+                end
                 msg=sprintf(varargin{:});
                  % concatenate to handle \n in msg (note: fails if msg
                  %  contains %; it could be duplicated to %%)
-                fprintf([sprintf('{%s} ',class(L)),char(msg)])
+                msg = [sprintf('{%s} ',class(L)),char(msg)];
+                if isprop(L, 'Logger') && ~isempty(L.Logger)
+                    ChosenLogger = L.Logger;
+                else
+                    ChosenLogger = DefaultLogger;
+                end
+                ChosenLogger.msgLog(LogLevel.Info, msg);
+                    
             end
         end
         
@@ -50,10 +62,20 @@ classdef LAST_Handle < handle
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
+            global DefaultLogger
             if L.Verbose>1
+                if isempty(DefaultLogger)
+                    DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
+                end
                 msg=sprintf(varargin{:});
-                fprintf([sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
-                         class(L)),char(msg)]) % concatenate to handle \n in msg
+                msg = [sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
+                         class(L)),char(msg)]; % concatenate to handle \n in msg
+                if isprop(L, 'Logger') && ~isempty(Obj.Logger)
+                    ChosenLogger = L.Logger;
+                else
+                    ChosenLogger = DefaultLogger;
+                end
+                ChosenLogger.msgLog(LogLevel.Debug, msg);
             end
         end
 
@@ -64,13 +86,23 @@ classdef LAST_Handle < handle
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
+            global DefaultLogger
+            if isempty(DefaultLogger)
+                DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
+            end
             msg=sprintf(varargin{:});
             L.LastError=msg;
-            L.report([msg,'\n'])
+            if isprop(L, 'Logger') && ~isempty(Obj.Logger)
+                ChosenLogger = Obj.Logger;
+            else
+                ChosenLogger = DefaultLogger;
+            end
+            ChosenLogger.msgLog(LogLevel.Error, msg);
             throw(MException("Webapi:" + strrep(class(L),'.','_'), msg));
         end
 
     end
         
 end
+
 
