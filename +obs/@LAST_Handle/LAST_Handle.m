@@ -79,7 +79,7 @@ classdef LAST_Handle < handle
             end
         end
 
-        function reportError(L,varargin)
+        function reportException(L,ex,varargin)
             % report on stdout and set LastError, with the same argument
             % Input: a character array, followed by optional arguments
             % All input arguments are formatted as sprintf(varargin{:});
@@ -92,13 +92,22 @@ classdef LAST_Handle < handle
             end
             msg=sprintf(varargin{:});
             L.LastError=msg;
-            if isprop(L, 'Logger') && ~isempty(Obj.Logger)
-                ChosenLogger = Obj.Logger;
-            else
-                ChosenLogger = DefaultLogger;
+            if isprop(L, 'Logger')
+                if isempty(L.Logger)
+                    Obj.Logger = DefaultLogger;
+                else
+                    L.Logger
+                end
             end
-            ChosenLogger.msgLog(LogLevel.Error, msg);
-            throw(MException("Webapi:" + strrep(class(L),'.','_'), msg));
+            if isprop(L, 'Logger')
+                if ~isempty(Obj.Logger)
+                    ChosenLogger = Obj.Logger;
+                else
+                    ChosenLogger = DefaultLogger;
+                end
+            end
+            ChosenLogger.msgLogEx(LogLevel.Error, ex, msg);
+            rethrow(ex);
         end
 
     end
