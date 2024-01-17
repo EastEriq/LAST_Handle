@@ -63,7 +63,7 @@ classdef LAST_Handle < handle
             %  the following arguments.
             msg=sprintf(varargin{:});
             L.LastError=msg;
-            L.report([msg,'\n'])
+            L.report(msg)
         end
 
         
