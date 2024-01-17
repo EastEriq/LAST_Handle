@@ -53,6 +53,20 @@ classdef LAST_Handle < handle
             end
         end
         
+        
+        function reportError(L,varargin)
+            % report on stdout and set LastError, with the same argument
+            % Input: a character array, followed by optional arguments
+            % All input arguments are formatted as sprintf(varargin{:});
+            %  hence when there is more than one, the first argument
+            %  has to be a format specifier, consistent with the types of
+            %  the following arguments.
+            msg=sprintf(varargin{:});
+            L.LastError=msg;
+            L.report([msg,'\n'])
+        end
+
+        
         function reportDebug(L,varargin)
             % verbose reporting of debug messages, for .Verbose=2
             % (to be replaced by a proper call to
