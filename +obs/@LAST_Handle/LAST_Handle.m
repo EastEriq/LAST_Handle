@@ -34,22 +34,13 @@ classdef LAST_Handle < handle
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
-            global DefaultLogger
             if L.Verbose
-                if isempty(DefaultLogger)
-                    DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
-                end
                 msg=sprintf(varargin{:});
-                 % concatenate to handle \n in msg (note: fails if msg
-                 %  contains %; it could be duplicated to %%)
+                % concatenate to handle \n in msg (note: fails if msg
+                %  contains %; it could be duplicated to %%)
                 msg = [sprintf('{%s} ',class(L)),char(msg)];
-                if isprop(L, 'Logger') && ~isempty(L.Logger)
-                    ChosenLogger = L.Logger;
-                else
-                    ChosenLogger = DefaultLogger;
-                end
+                ChosenLogger=L.getLogger;
                 ChosenLogger.msgLog(LogLevel.Info, msg);
-                    
             end
         end
         
@@ -63,32 +54,23 @@ classdef LAST_Handle < handle
             %  the following arguments.
             msg=sprintf(varargin{:});
             L.LastError=msg;
-            L.report(msg)
+            ChosenLogger=L.getLogger;
+            ChosenLogger.msgLog(LogLevel.Error, msg);
         end
 
         
         function reportDebug(L,varargin)
             % verbose reporting of debug messages, for .Verbose=2
-            % (to be replaced by a proper call to
-            %  AstroPack logger), like N.LogFile.write(msg)
             % Input: a character array, followed by optional arguments
             % All input arguments are formatted as sprintf(varargin{:});
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
-            global DefaultLogger
             if L.Verbose>1
-                if isempty(DefaultLogger)
-                    DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
-                end
                 msg=sprintf(varargin{:});
                 msg = [sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
-                         class(L)),char(msg)]; % concatenate to handle \n in msg
-                if isprop(L, 'Logger') && ~isempty(Obj.Logger)
-                    ChosenLogger = L.Logger;
-                else
-                    ChosenLogger = DefaultLogger;
-                end
+                       class(L)),char(msg)]; % concatenate to handle \n in msg
+                ChosenLogger=L.getLogger;
                 ChosenLogger.msgLog(LogLevel.Debug, msg);
             end
         end
@@ -100,26 +82,9 @@ classdef LAST_Handle < handle
             %  hence when there is more than one, the first argument
             %  has to be a format specifier, consistent with the types of
             %  the following arguments.
-            global DefaultLogger
-            if isempty(DefaultLogger)
-                DefaultLogger = obs.api.ApiLogger('FilePath', 'no-location');
-            end
             msg=sprintf(varargin{:});
             L.LastError=msg;
-            if isprop(L, 'Logger')
-                if isempty(L.Logger)
-                    Obj.Logger = DefaultLogger;
-                else
-                    L.Logger
-                end
-            end
-            if isprop(L, 'Logger')
-                if ~isempty(Obj.Logger)
-                    ChosenLogger = Obj.Logger;
-                else
-                    ChosenLogger = DefaultLogger;
-                end
-            end
+            ChosenLogger=L.getLogger;
             ChosenLogger.msgLogEx(LogLevel.Error, ex, msg);
             rethrow(ex);
         end
