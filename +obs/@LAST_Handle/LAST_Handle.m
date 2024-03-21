@@ -36,6 +36,11 @@ classdef LAST_Handle < handle
             %  the following arguments.
             if L.Verbose
                 msg=sprintf(varargin{:});
+                % most of the orignial classes reported with a terminating
+                %  \n. Remove it
+                if msg(end)==10
+                    msg=msg(1:end-1);
+                end
                 % concatenate to handle \n in msg (note: fails if msg
                 %  contains %; it could be duplicated to %%)
                 msg = [sprintf('{%s} ',class(L)),char(msg)];
