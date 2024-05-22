@@ -46,9 +46,8 @@ function Result=classCommand(Obj,varargin)
 %       consider an argument WaitReply. If false, and nargout=0, use
 %       Messenger.send instead of .query [or suppress Result altogether]
 
-if isempty(Obj)
-    Result = [];
-else
+Result=[];
+if ~isempty(Obj)
     try
         Command=sprintf(varargin{:});
     catch
@@ -74,7 +73,6 @@ else
         catch
             Obj.reportError('invalid or uninitialized remote class %s',...
                             Obj.Id)
-            Result=[];
         end
     else
         % how to understand if there is going to be a reply without calling the
