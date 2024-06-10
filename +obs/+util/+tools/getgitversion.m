@@ -13,7 +13,7 @@ function versionstring=getgitversion(fullpath)
     
     % more compact, by pieces
     [~,r]=system(['cd ' p ...
-        ';echo `git branch --show-current` `git tag` `git log -n 1 --format="%h %as"`']);
+        ';echo `git branch --show-current`:`git tag`-g`git log -n 1 --format="%h %as"`']);
     if ~contains(r,'fatal: not a git repository')
         versionstring=strrep(r,newline,'');
     else
