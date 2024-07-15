@@ -32,7 +32,10 @@ classdef LAST_Handle < handle
                 msg=sprintf(varargin{:});
                  % concatenate to handle \n in msg (note: fails if msg
                  %  contains %; it could be duplicated to %%)
-                fprintf([sprintf('{%s} ',class(L)),char(msg)])
+                %prefix=sprintf('{%s} ',class(L));
+                prefix=sprintf('{%s|%s[%s]} ',datestr(now,'HH:MM:SS.FFF'),...
+                                class(L),L.Id);
+                fprintf([prefix,char(msg)])
             end
         end
         
