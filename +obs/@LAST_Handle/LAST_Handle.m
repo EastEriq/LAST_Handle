@@ -88,15 +88,43 @@ classdef LAST_Handle < handle
         
         % event listener callbacks for generic get and set properties:
         %  to be used to push data to a PV store
+        % interesting observation: L.(Source.Name) can apparently
+        %  be accessed within the callback function without
+        %  triggering the callback an additional time. But this does not
+        %  mean that the getter is not called an additional time.
+        %  EventData.AffectedObject.(Source.Name), the same.
+        %  Also the help desn't show a way to retrieve the value which has
+        %  just been set, but calling the getter again.
+        % We could restrict these callbacks to properties which have an
+        %  empty getter or setter. The assumption would be that
+        %  they don't because they access a property in memory, and
+        %  it is affordable to call them multiple times, whereas
+        %  the presence of a getter or a setter is synonimous of a routine
+        %  accessing a resource. This is not at all guaranteed to be true,
+        %  though.
+        % We cou also consider to use a special keyword for that in the field
+        %  Source.Description, like it was done in webapiTransition
         function pushPropertySet(L,Source,EventData)
             if L.PushPropertyChanges
-                fprintf('%s %s %s being set\n',class(L),L.Id,Source.Name);
+                if isempty(Source.GetMethod)
+                    fprintf('%s %s %s being set to\n',class(L),L.Id,Source.Name);
+                    disp(L.(Source.Name))
+                else
+                   fprintf('%s %s %s being set\n',class(L),L.Id,Source.Name);
+                   fprintf(' you should add something to the setter, to use the value\n');
+                end
             end
         end
         
         function pushPropertyGet(L,Source,EventData)
             if L.PushPropertyChanges
-                fprintf('%s %s got %s\n',class(L),L.Id,Source.Name);
+                if isempty(Source.GetMethod)
+                    fprintf('%s %s got %s\n',class(L),L.Id,Source.Name);
+                    disp(L.(Source.Name))
+                else
+                   fprintf('%s %s %s retrieved\n',class(L),L.Id,Source.Name);
+                   fprintf(' you should add something to the getter, to use the value\n');
+                end
             end
         end
 
