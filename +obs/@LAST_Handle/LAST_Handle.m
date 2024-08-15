@@ -20,17 +20,18 @@ classdef LAST_Handle < handle
         % generic superclass creator - sets listeners for all
         %  observable properties
         function L=LAST_Handle()
-            mc=metaclass(L);
-            for i=1:numel(mc.PropertyList)
-                if mc.PropertyList(i).SetObservable
-                    addlistener(L, mc.PropertyList(i).Name,'PostSet',...
-                                @L.pushPropertySet);
-                end
-                if mc.PropertyList(i).GetObservable
-                    addlistener(L, mc.PropertyList(i).Name,'PostGet',...
-                                @L.pushPropertyGet);
-                end
-            end
+% Not mature enough. Commented out
+%             mc=metaclass(L);
+%             for i=1:numel(mc.PropertyList)
+%                 if mc.PropertyList(i).SetObservable
+%                     addlistener(L, mc.PropertyList(i).Name,'PostSet',...
+%                                 @L.pushPropertySet);
+%                 end
+%                 if mc.PropertyList(i).GetObservable
+%                     addlistener(L, mc.PropertyList(i).Name,'PostGet',...
+%                                 @L.pushPropertyGet);
+%                 end
+%             end
         end
     end
     
@@ -104,6 +105,8 @@ classdef LAST_Handle < handle
         %  though.
         % We cou also consider to use a special keyword for that in the field
         %  Source.Description, like it was done in webapiTransition
+        % Also, beware of pushing big values. In particular,
+        %  camera.LastImage!!!
         function pushPropertySet(L,Source,EventData)
             if L.PushPropertyChanges
                 if isempty(Source.GetMethod)
