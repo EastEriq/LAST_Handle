@@ -4,6 +4,8 @@ function versionstring=getgitversion(fullpath)
     % git describe is compact, but works only if there is a tag in the
     %  ancestor
     
+    [~,r]=system(''); % to flush previous stdout
+    
     % long signature, using git log with format
     %  produces something like
     %    HEAD -> gledmagicwater, origin/gledmagicwater 3c54732 2024-06-09
