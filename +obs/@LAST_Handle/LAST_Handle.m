@@ -5,7 +5,8 @@ classdef LAST_Handle < handle
      
     properties (Hidden)
         Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
-        Config     % struct of all fields read from the configuration, including those which are only informative 
+        Config     % struct of all fields read from the configuration, including those which are only informative
+        PushPropertyChanges = false; % react to PostSet and PostGet events for Observable properties
     end
     
     properties (Hidden, GetAccess = public, SetAccess = protected)
@@ -13,6 +14,24 @@ classdef LAST_Handle < handle
         PhysicalId char; % a physical identifier for the device (if applicable), like a serial number, or the connection port name
         LastError char;  % The last error message
         GitVersion char; % a string for storing git version information
+    end
+    
+    methods
+        % generic superclass creator - sets listeners for all
+        %  observable properties
+        function L=LAST_Handle()
+            mc=metaclass(L);
+            for i=1:numel(mc.PropertyList)
+                if mc.PropertyList(i).SetObservable
+                    addlistener(L, mc.PropertyList(i).Name,'PostSet',...
+                                @L.pushPropertySet);
+                end
+                if mc.PropertyList(i).GetObservable
+                    addlistener(L, mc.PropertyList(i).Name,'PostGet',...
+                                @L.pushPropertyGet);
+                end
+            end
+        end
     end
     
     methods(Access = ?obs.LAST_Handle)
@@ -65,6 +84,20 @@ classdef LAST_Handle < handle
             msg=sprintf(varargin{:});
             L.LastError=msg;
             L.report([msg,'\n'])
+        end
+        
+        % event listener callbacks for generic get and set properties:
+        %  to be used to push data to a PV store
+        function pushPropertySet(L,Source,EventData)
+            if L.PushPropertyChanges
+                fprintf('%s %s %s being set\n',class(L),L.Id,Source.Name);
+            end
+        end
+        
+        function pushPropertyGet(L,Source,EventData)
+            if L.PushPropertyChanges
+                fprintf('%s %s got %s\n',class(L),L.Id,Source.Name);
+            end
         end
 
     end

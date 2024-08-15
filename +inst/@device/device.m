@@ -5,4 +5,11 @@ classdef device < obs.LAST_Handle
         WhenExpectedReady double =[]; % time at which twe anticipate that the resource may be ready (serial date number)
     end
     
+    methods
+        % creator
+        function D=device()
+            % call the parent creator to define the property listeners
+            D@obs.LAST_Handle;
+        end
+    end
 end
