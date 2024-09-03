@@ -14,6 +14,7 @@ classdef LAST_Handle < handle
         PhysicalId char; % a physical identifier for the device (if applicable), like a serial number, or the connection port name
         LastError char;  % The last error message
         GitVersion char; % a string for storing git version information
+        PVstore % an object to connect with the process Variable store (e.g. Redis)
     end
     
     methods
@@ -32,6 +33,25 @@ classdef LAST_Handle < handle
 %                                 @L.pushPropertyGet);
 %                 end
 %             end
+        end
+    end
+    
+    methods
+        % Setter to toggle push to Redis on or off
+        %  (more to make it optional for certain objects, than to toggle it
+        %  during the object lifetime)
+        function set.PushPropertyChanges(L,flag)
+            if flag
+                try
+                    L.PVstore=Redis('localhost', 6379, 'password', 'foobared');
+                catch
+                end
+            else
+                if ~isempty(L.PVstore)
+                    delete(L.PVstore);
+                    L.PVstore=[];
+                end
+            end
         end
     end
     
@@ -94,8 +114,8 @@ classdef LAST_Handle < handle
         %  triggering the callback an additional time. But this does not
         %  mean that the getter is not called an additional time.
         %  EventData.AffectedObject.(Source.Name), the same.
-        %  Also the help desn't show a way to retrieve the value which has
-        %  just been set, but calling the getter again.
+        %  Also the help doesn't show a way to retrieve the value which has
+        %  just been set, without calling the getter again.
         % We could restrict these callbacks to properties which have an
         %  empty getter or setter. The assumption would be that
         %  they don't because they access a property in memory, and
@@ -131,6 +151,15 @@ classdef LAST_Handle < handle
             end
         end
 
+        % pushing to Redis
+        function pushPVvalue(L,value)
+            if ~isempty(L.PVstore)
+                stack=dbstack();
+                fun=stack(end).name;
+                key=sprintf('%s:%s',fun,L.Id);
+                L.PVstore.set(key,value);
+            end
+        end
     end
         
 end
