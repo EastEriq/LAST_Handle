@@ -155,7 +155,7 @@ classdef LAST_Handle < handle
         function pushPVvalue(L,value)
             if ~isempty(L.PVstore)
                 stack=dbstack();
-                fun=stack(end).name;
+                fun=stack(2).name;
                 key=sprintf('%s:%s',fun,L.Id);
                 L.PVstore.set(key,value);
             end
