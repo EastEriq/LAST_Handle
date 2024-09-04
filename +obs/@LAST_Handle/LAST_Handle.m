@@ -157,7 +157,10 @@ classdef LAST_Handle < handle
                 stack=dbstack();
                 fun=stack(2).name;
                 key=sprintf('%s:%s',fun,L.Id);
-                L.PVstore.set(key,value);
+                t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
+                L.PVstore.hset(key,'t',t,'v',value);
+                % set one day for expiration (could also not)
+                L.PVstore.expire(key,86400);
             end
         end
     end
