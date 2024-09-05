@@ -55,6 +55,14 @@ classdef LAST_Handle < handle
         end
     end
     
+    methods
+        % setter to push to PV
+        function set.LastError(L,msg)
+            L.LastError=msg;
+            L.pushPVvalue(msg);
+        end
+    end
+
     methods(Access = ?obs.LAST_Handle)
         % the definitions are here instead than in separate files in a private/
         %  folder: so all subclasses which inherit from LAST_Handle can use
@@ -76,6 +84,7 @@ classdef LAST_Handle < handle
                 prefix=sprintf('{%s|%s[%s]} ',datestr(now,'HH:MM:SS.FFF'),...
                                 class(L),L.Id);
                 fprintf([prefix,char(msg)])
+                L.pushPVvalue(msg);
             end
         end
         
@@ -92,6 +101,7 @@ classdef LAST_Handle < handle
                 msg=sprintf(varargin{:});
                 fprintf([sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
                          class(L)),char(msg)]) % concatenate to handle \n in msg
+                L.pushPVvalue(msg);
             end
         end
 
@@ -106,7 +116,8 @@ classdef LAST_Handle < handle
             L.LastError=msg;
             L.report([msg,'\n'])
         end
-        
+
+
         % event listener callbacks for generic get and set properties:
         %  to be used to push data to a PV store
         % interesting observation: L.(Source.Name) can apparently
