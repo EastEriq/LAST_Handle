@@ -6,7 +6,8 @@ classdef LAST_Handle < handle
     properties (Hidden)
         Verbose=1; % textual verbosity. 0=suppress, 1=report info, 2=blabber
         Config     % struct of all fields read from the configuration, including those which are only informative
-        PushPropertyChanges = false; % react to PostSet and PostGet events for Observable properties
+        PushPropertyChanges = false; % enable/disable pushing to PVstore
+        PeriodicQueries = struct('Properties',{},'Period',NaN); % list of properties which are periodically queried in order to update the PV store
     end
     
     properties (Hidden, GetAccess = public, SetAccess = protected)
@@ -44,6 +45,14 @@ classdef LAST_Handle < handle
             if flag
                 try
                     L.PVstore=Redis('localhost', 6379, 'password', 'foobared');
+                    % create timers for all periodic queries
+                    for i=1:numel(L.PeriodicQueries)
+                        timername=[class(L) '.' L.Id ':' num2str(i)];
+                        t=timer('Name',timername,'Period',L.PeriodicQueries(i).Period,...
+                            'ExecutionMode','fixedSpacing','BusyMode','Queue',...
+                            'StartDelay',0,'TimerFcn',{@L.periodicQuery,i});
+                        t.start;
+                    end
                 catch
                 end
             else
@@ -51,12 +60,17 @@ classdef LAST_Handle < handle
                     delete(L.PVstore);
                     L.PVstore=[];
                 end
+                % delete timers for periodic queries
+                for i=1:numel(L.PeriodicQueries)
+                    timername=[class(L) '.' L.Id ':' num2str(i)];
+                    delete(timerfind('Name',timername));
+                end
             end
         end
     end
     
     methods
-        % setter to push to PV
+        % setter to push LastError to PV
         function set.LastError(L,msg)
             L.LastError=msg;
             L.pushPVvalue(msg);
@@ -138,29 +152,29 @@ classdef LAST_Handle < handle
         %  Source.Description, like it was done in webapiTransition
         % Also, beware of pushing big values. In particular,
         %  camera.LastImage!!!
-        function pushPropertySet(L,Source,EventData)
-            if L.PushPropertyChanges
-                if isempty(Source.GetMethod)
-                    fprintf('%s %s %s being set to\n',class(L),L.Id,Source.Name);
-                    disp(L.(Source.Name))
-                else
-                   fprintf('%s %s %s being set\n',class(L),L.Id,Source.Name);
-                   fprintf(' you should add something to the setter, to use the value\n');
-                end
-            end
-        end
-        
-        function pushPropertyGet(L,Source,EventData)
-            if L.PushPropertyChanges
-                if isempty(Source.GetMethod)
-                    fprintf('%s %s got %s\n',class(L),L.Id,Source.Name);
-                    disp(L.(Source.Name))
-                else
-                   fprintf('%s %s %s retrieved\n',class(L),L.Id,Source.Name);
-                   fprintf(' you should add something to the getter, to use the value\n');
-                end
-            end
-        end
+%         function pushPropertySet(L,Source,EventData)
+%             if L.PushPropertyChanges
+%                 if isempty(Source.GetMethod)
+%                     fprintf('%s %s %s being set to\n',class(L),L.Id,Source.Name);
+%                     disp(L.(Source.Name))
+%                 else
+%                    fprintf('%s %s %s being set\n',class(L),L.Id,Source.Name);
+%                    fprintf(' you should add something to the setter, to use the value\n');
+%                 end
+%             end
+%         end
+%         
+%         function pushPropertyGet(L,Source,EventData)
+%             if L.PushPropertyChanges
+%                 if isempty(Source.GetMethod)
+%                     fprintf('%s %s got %s\n',class(L),L.Id,Source.Name);
+%                     disp(L.(Source.Name))
+%                 else
+%                    fprintf('%s %s %s retrieved\n',class(L),L.Id,Source.Name);
+%                    fprintf(' you should add something to the getter, to use the value\n');
+%                 end
+%             end
+%         end
 
         % pushing to Redis
         function pushPVvalue(L,value)
@@ -172,6 +186,13 @@ classdef LAST_Handle < handle
                 L.PVstore.hset(key,'t',t,'v',jsonencode(value));
                 % set one day for expiration (could also not)
                 L.PVstore.expire(key,86400);
+            end
+        end
+        
+        % periodic query function
+        function periodicQuery(L,~,~,i)
+            for j=1:numel(L.PeriodicQueries(i).Properties)
+                evalin('caller',['L.' L.PeriodicQueries(i).Properties{j} ';']);
             end
         end
     end
