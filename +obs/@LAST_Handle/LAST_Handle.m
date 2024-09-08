@@ -73,7 +73,7 @@ classdef LAST_Handle < handle
         % setter to push LastError to PV
         function set.LastError(L,msg)
             L.LastError=msg;
-            L.pushPVvalue(msg);
+            L.pushPVkeyvalue('LastError',msg);
         end
     end
 
@@ -98,7 +98,7 @@ classdef LAST_Handle < handle
                 prefix=sprintf('{%s|%s[%s]} ',datestr(now,'HH:MM:SS.FFF'),...
                                 class(L),L.Id);
                 fprintf([prefix,char(msg)])
-                L.pushPVvalue(msg);
+                L.pushPVkeyvalue('report',msg);
             end
         end
         
@@ -115,7 +115,7 @@ classdef LAST_Handle < handle
                 msg=sprintf(varargin{:});
                 fprintf([sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
                          class(L)),char(msg)]) % concatenate to handle \n in msg
-                L.pushPVvalue(msg);
+                L.pushPVkeyvalue('reportDebug',msg);
             end
         end
 
@@ -186,6 +186,21 @@ classdef LAST_Handle < handle
                 L.PVstore.hset(key,'t',t,'v',jsonencode(value));
                 % set one day for expiration (could also not)
                 L.PVstore.expire(key,86400);
+            end
+        end
+        
+        function pushPVkeyvalue(L,key,value)
+            % variant of pushPVvalue for the few cases in which I want to
+            %  specify explicitely the key instead of deriving it from the
+            %  calling function name. E.g, multiple pushes in XerxesMountBinary.getRADec
+            classname=split(class(L),'.');
+            classname=classname{end};
+            fullkey=sprintf('%s.%s:%s',classname,key,L.Id);
+            if ~isempty(L.PVstore)
+                t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
+                L.PVstore.hset(fullkey,'t',t,'v',jsonencode(value));
+                % set one day for expiration (could also not)
+                L.PVstore.expire(fullkey,86400);
             end
         end
         
