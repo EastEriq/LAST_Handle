@@ -210,6 +210,11 @@ classdef LAST_Handle < handle
                 evalin('caller',['L.' L.PeriodicQueries(i).Properties{j} ';']);
             end
         end
+
+        % set again a property, i.e. call the setter besides the getter
+        function setAgain(L,prop)
+            L.(prop)=L.(prop);
+        end
     end
         
 end
