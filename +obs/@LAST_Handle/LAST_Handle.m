@@ -48,6 +48,8 @@ classdef LAST_Handle < handle
                     % create timers for all periodic queries
                     for i=1:numel(L.PeriodicQueries)
                         timername=[class(L) '.' L.Id ':' num2str(i)];
+                        delete(timerfind('Name',timername)); % avoid recreating by mistake
+                        L.reportDebug(['creating ' timername ' for i=%d\n'],i)
                         t=timer('Name',timername,'Period',L.PeriodicQueries(i).Period,...
                             'ExecutionMode','fixedSpacing','BusyMode','Queue',...
                             'StartDelay',0,'TimerFcn',{@L.periodicQuery,i});
@@ -208,7 +210,11 @@ classdef LAST_Handle < handle
         % periodic query function
         function periodicQuery(L,~,~,i)
             for j=1:numel(L.PeriodicQueries(i).Properties)
+                % we use eval, instead of L.(field), so that also function
+                %  evaluations are allowed (like .setAgain,
+                %   .getPropertyIfConnected, etc)
                 evalin('caller',['L.' L.PeriodicQueries(i).Properties{j} ';']);
+                %L.(L.PeriodicQueries(i).Properties{j});
             end
         end
 
