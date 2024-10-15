@@ -54,6 +54,7 @@ classdef LAST_Handle < handle
                         t.start;
                     end
                 catch
+                    L.reportError('cannot connect with Redis on localhost -- is it installed?')
                 end
             else
                 if ~isempty(L.PVstore)
@@ -113,8 +114,8 @@ classdef LAST_Handle < handle
             %  the following arguments.
             if L.Verbose>1
                 msg=sprintf(varargin{:});
-                fprintf([sprintf('{%s|%s} ',datestr(now,'HH:MM:SS.FFF'),...
-                         class(L)),char(msg)]) % concatenate to handle \n in msg
+                fprintf([sprintf('{%s|%s[%s]} ',datestr(now,'HH:MM:SS.FFF'),...
+                         class(L),L.Id),char(msg)]) % concatenate to handle \n in msg
                 L.pushPVkeyvalue('reportDebug',msg);
             end
         end
