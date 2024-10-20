@@ -55,8 +55,10 @@ classdef LAST_Handle < handle
                             'StartDelay',0,'TimerFcn',{@L.periodicQuery,i});
                         t.start;
                     end
+                    L.PushPropertyChanges=true;
                 catch
                     L.reportError('cannot connect with Redis on localhost -- is it installed?')
+                    L.PushPropertyChanges=false;
                 end
             else
                 if ~isempty(L.PVstore)
@@ -68,8 +70,10 @@ classdef LAST_Handle < handle
                     timername=[class(L) '.' L.Id ':' num2str(i)];
                     delete(timerfind('Name',timername));
                 end
+                L.PushPropertyChanges=false;
             end
         end
+
     end
     
     methods
