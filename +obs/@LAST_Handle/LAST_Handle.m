@@ -217,8 +217,15 @@ classdef LAST_Handle < handle
                 % we use eval, instead of L.(field), so that also function
                 %  evaluations are allowed (like .setAgain,
                 %   .getPropertyIfConnected, etc)
-                evalin('caller',['L.' L.PeriodicQueries(i).Properties{j} ';']);
+                try
+                    evalin('caller',['L.' L.PeriodicQueries(i).Properties{j} ';']);
                 %L.(L.PeriodicQueries(i).Properties{j});
+                catch
+                    % catch, beacuse we don't want that an error stops the
+                    %  timer
+                    L.reportError('error in periodic query of %s',...
+                                    L.PeriodicQueries(i).Properties{j})
+                end
             end
         end
 
