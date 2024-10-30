@@ -16,12 +16,15 @@ classdef LAST_Handle < handle
         LastError char;  % The last error message
         GitVersion char; % a string for storing git version information
         PVstore % an object to connect with the process Variable store (e.g. Redis)
+        UUID = sprintf('%s',java.util.UUID.randomUUID);
     end
     
     methods
         % generic superclass creator - sets listeners for all
         %  observable properties
         function L=LAST_Handle()
+            L.UUID = sprintf('%s',java.util.UUID.randomUUID);
+
 % Not mature enough. Commented out
 %             mc=metaclass(L);
 %             for i=1:numel(mc.PropertyList)
@@ -47,12 +50,13 @@ classdef LAST_Handle < handle
                     L.PVstore=Redis('localhost', 6379, 'password', 'foobared');
                     % create timers for all periodic queries
                     for i=1:numel(L.PeriodicQueries)
-                        timername=[class(L) '.' L.Id ':' num2str(i)];
+                        timername=[class(L) '.PVpush.' L.Id ':' num2str(i)];
                         delete(timerfind('Name',timername)); % avoid recreating by mistake
                         L.reportDebug(['creating ' timername ' for i=%d\n'],i)
                         t=timer('Name',timername,'Period',L.PeriodicQueries(i).Period,...
                             'ExecutionMode','fixedSpacing','BusyMode','Queue',...
-                            'StartDelay',0,'TimerFcn',{@L.periodicQuery,i});
+                            'StartDelay',0,'TimerFcn',{@L.periodicQuery,i},...
+                            'Tag',L.UUID);
                         t.start;
                     end
                     L.PushPropertyChanges=true;
@@ -65,10 +69,13 @@ classdef LAST_Handle < handle
                     delete(L.PVstore);
                     L.PVstore=[];
                 end
-                % delete timers for periodic queries
+                % delete timers for periodic queries: refer to the UUID
+                %  tag, so in case the destructor of an object is called
+                %  *after* a new one is constructed, it does not delete a
+                %  newly created timer
                 for i=1:numel(L.PeriodicQueries)
-                    timername=[class(L) '.' L.Id ':' num2str(i)];
-                    delete(timerfind('Name',timername));
+                    timername=[class(L) '.PVpush.' L.Id ':' num2str(i)];
+                    delete(timerfind('Name',timername,'Tag',L.UUID));
                 end
                 L.PushPropertyChanges=false;
             end
