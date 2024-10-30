@@ -16,7 +16,7 @@ classdef LAST_Handle < handle
         LastError char;  % The last error message
         GitVersion char; % a string for storing git version information
         PVstore % an object to connect with the process Variable store (e.g. Redis)
-        UUID = sprintf('%s',java.util.UUID.randomUUID);
+        UUID = sprintf('%s',java.util.UUID.randomUUID); % https://www.mathworks.com/matlabcentral/answers/240447-using-java-uuid-in-matlab
     end
     
     methods
