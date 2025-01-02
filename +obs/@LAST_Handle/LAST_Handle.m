@@ -197,9 +197,13 @@ classdef LAST_Handle < handle
                 fun=stack(2).name;
                 key=sprintf('%s:%s',fun,L.Id);
                 t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
-                L.PVstore.hset(key,'t',t,'v',jsonencode(value));
-                % set one day for expiration (could also not)
-                L.PVstore.expire(key,86400);
+                try
+                    L.PVstore.hset(key,'t',t,'v',jsonencode(value));
+                    % set one day for expiration (could also not)
+                    L.PVstore.expire(key,86400);
+                catch
+                    L.reportError('cannot push to PVstore %s',key)
+                end
             end
         end
         
@@ -212,9 +216,13 @@ classdef LAST_Handle < handle
             fullkey=sprintf('%s.%s:%s',classname,key,L.Id);
             if ~isempty(L.PVstore)
                 t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
-                L.PVstore.hset(fullkey,'t',t,'v',jsonencode(value));
-                % set one day for expiration (could also not)
-                L.PVstore.expire(fullkey,86400);
+                try
+                    L.PVstore.hset(fullkey,'t',t,'v',jsonencode(value));
+                    % set one day for expiration (could also not)
+                    L.PVstore.expire(fullkey,86400);
+                catch
+                    L.reportError('cannot push to PVstore %s',fullkey)
+                end
             end
         end
         
