@@ -191,14 +191,23 @@ classdef LAST_Handle < handle
 %         end
 
         % pushing to Redis
-        function pushPVvalue(L,value)
+        function pushPVvalue(L,value,raw)
+            arguments
+                L
+                value
+                raw=false;
+            end
             if ~isempty(L.PVstore)
                 stack=dbstack();
                 fun=stack(2).name;
                 key=sprintf('%s:%s',fun,L.Id);
                 t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
                 try
-                    L.PVstore.hset(key,'t',t,'v',jsonencode(value));
+                    if raw
+                        L.PVstore.hset(key,'t',t,'v',value);
+                    else
+                        L.PVstore.hset(key,'t',t,'v',jsonencode(value));
+                    end
                     % set one day for expiration (could also not)
                     L.PVstore.expire(key,86400);
                 catch
