@@ -9,6 +9,7 @@ function Path=configPath(L)
     % We could make use for instance of class(L) for different subdirs
     Path=fullfile(functionpath,'..','..','..','LAST_config','config');
     % using coreutils' realpath makes a shorter string, but is not portable.
+    [~,r]=system(''); % purge stdout before !!!
     [~,Path]=system(['realpath ' Path]);
     Path=Path(1:end-1);
     % Matlab seems not to have a native equivalent, and I don't want to add
