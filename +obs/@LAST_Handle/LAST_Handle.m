@@ -210,8 +210,8 @@ classdef LAST_Handle < handle
                     end
                     % set one day for expiration (could also not)
                     L.PVstore.expire(key,86400);
-                catch
-                    L.reportError('cannot push to PVstore %s',key)
+                catch PushError
+                    L.reportError('cannot push to PVstore %s : %s',key,PushError.message)
                 end
             end
         end
@@ -229,8 +229,8 @@ classdef LAST_Handle < handle
                     L.PVstore.hset(fullkey,'t',t,'v',jsonencode(value));
                     % set one day for expiration (could also not)
                     L.PVstore.expire(fullkey,86400);
-                catch
-                    L.reportError('cannot push to PVstore %s',fullkey)
+                catch PushError
+                    L.reportError('cannot push to PVstore %s : %s',fullkey,PushError.message)
                 end
             end
         end
