@@ -202,20 +202,16 @@ classdef LAST_Handle < handle
                 fun=stack(2).name;
                 key=sprintf('%s:%s',fun,L.Id);
                 t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
-                % check for recursion (which could happen if Redis has
-                % issues), to avoid to push .LastError recursively
-                if ~strcmp(stack(2).name,stack(1).name)
-                    try
-                        if raw
-                            L.PVstore.hset(key,'t',t,'v',value);
-                        else
-                            L.PVstore.hset(key,'t',t,'v',jsonencode(value));
-                        end
-                        % set one day for expiration (could also not)
-                        L.PVstore.expire(key,86400);
-                    catch PushError
-                        L.reportError('cannot push to PVstore %s : %s',key,PushError.message)
+                try
+                    if raw
+                        L.PVstore.hset(key,'t',t,'v',value);
+                    else
+                        L.PVstore.hset(key,'t',t,'v',jsonencode(value));
                     end
+                    % set one day for expiration (could also not)
+                    L.PVstore.expire(key,86400);
+                catch PushError
+                    L.reportError('cannot push to PVstore %s : %s',key,PushError.message)
                 end
             end
         end
@@ -234,7 +230,12 @@ classdef LAST_Handle < handle
                     % set one day for expiration (could also not)
                     L.PVstore.expire(fullkey,86400);
                 catch PushError
-                    L.reportError('cannot push to PVstore %s : %s',fullkey,PushError.message)
+                    % check for recursion (which could happen if Redis has
+                    % issues), to avoid to push .LastError recursively
+                    d=dbstack;
+                    if ~any(strcmp({d.name},'LAST_Handle.pushPVkeyvalue'))
+                        L.reportError('cannot push to PVstore %s : %s',fullkey,PushError.message)
+                    end
                 end
             end
         end
