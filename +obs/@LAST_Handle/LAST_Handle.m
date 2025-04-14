@@ -210,14 +210,16 @@ classdef LAST_Handle < handle
                 for i=1:N
                     if N>1
                         key=sprintf('%s:%s_%d',fun,L.Id,i);
+                        v=value;
                     else
                         key=sprintf('%s:%s',fun,L.Id);
+                        v=value(i);
                     end
                     try
                         if raw
-                            L.PVstore.hset(key,'t',t,'v',value(i));
+                            L.PVstore.hset(key,'t',t,'v',v);
                         else
-                            L.PVstore.hset(key,'t',t,'v',jsonencode(value(i)));
+                            L.PVstore.hset(key,'t',t,'v',jsonencode(v));
                         end
                         % set one day for expiration (could also not)
                         L.PVstore.expire(key,86400);
