@@ -210,10 +210,10 @@ classdef LAST_Handle < handle
                 for i=1:N
                     if N>1
                         key=sprintf('%s:%s_%d',fun,L.Id,i);
-                        v=value;
+                        v=value(i);
                     else
                         key=sprintf('%s:%s',fun,L.Id);
-                        v=value(i);
+                        v=value;
                     end
                     try
                         if raw
