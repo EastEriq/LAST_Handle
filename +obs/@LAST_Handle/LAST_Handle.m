@@ -200,18 +200,36 @@ classdef LAST_Handle < handle
             if ~isempty(L.PVstore)
                 stack=dbstack();
                 fun=stack(2).name;
-                key=sprintf('%s:%s',fun,L.Id);
                 t=(now-datenum(1970,1,1))*86400; % timezone ignored but locale should be UTC
-                try
-                    if raw
-                        L.PVstore.hset(key,'t',t,'v',value);
+                % individual push of components for vector values
+                if ~isa(value,'char') && numel(value)>1
+                    N=numel(value);
+                else
+                    N=1;
+                end
+                for i=1:N
+                    if N>1
+                        % note dot suffix for vector elements - so
+                        % to differentiate from _1, _2 which imply
+                        %  east host and _3,_4 which imply west in the
+                        %  usual LAST configurations. Naughty.
+                        key=sprintf('%s:%s.%d',fun,L.Id,i);
+                        v=value(i);
                     else
-                        L.PVstore.hset(key,'t',t,'v',jsonencode(value));
+                        key=sprintf('%s:%s',fun,L.Id);
+                        v=value;
                     end
-                    % set one day for expiration (could also not)
-                    L.PVstore.expire(key,86400);
-                catch PushError
-                    L.reportError('cannot push to PVstore %s : %s',key,PushError.message)
+                    try
+                        if raw
+                            L.PVstore.hset(key,'t',t,'v',v);
+                        else
+                            L.PVstore.hset(key,'t',t,'v',jsonencode(v));
+                        end
+                        % set one day for expiration (could also not)
+                        L.PVstore.expire(key,86400);
+                    catch PushError
+                        L.reportError('cannot push to PVstore %s : %s',key,PushError.message)
+                    end
                 end
             end
         end
