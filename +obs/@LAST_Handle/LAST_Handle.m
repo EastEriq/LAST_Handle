@@ -209,7 +209,11 @@ classdef LAST_Handle < handle
                 end
                 for i=1:N
                     if N>1
-                        key=sprintf('%s:%s_%d',fun,L.Id,i);
+                        % note dot suffix for vector elements - so
+                        % to differentiate from _1, _2 which imply
+                        %  east host and _3,_4 which imply west in the
+                        %  usual LAST configurations. Naughty.
+                        key=sprintf('%s:%s.%d',fun,L.Id,i);
                         v=value(i);
                     else
                         key=sprintf('%s:%s',fun,L.Id);
