@@ -55,8 +55,13 @@ classdef LAST_Handle < handle
                         L.reportDebug(['creating ' timername ' for i=%d\n'],i)
                         t=timer('Name',timername,'Period',L.PeriodicQueries(i).Period,...
                             'ExecutionMode','fixedSpacing','BusyMode','Queue',...
-                            'StartDelay',0,'TimerFcn',{@L.periodicQuery,i},...
+                            'StartDelay',L.PeriodicQueries(i).Period,'TimerFcn',{@L.periodicQuery,i},...
                             'Tag',L.UUID);
+                        % note 'StartDelay' = one period. This is a dirty
+                        %    hack for hardware classes which need to
+                        %    squelch dummy 'unknown' reports before the
+                        %    connect command is issued. May have to revert
+                        %    it to 0
                         t.start;
                     end
                     L.PushPropertyChanges=true;
