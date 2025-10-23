@@ -73,7 +73,7 @@ if ~isempty(Obj)
         catch merr
             Obj.reportError(['invalid or uninitialized remote class %s:\n' ...
                             '"%s" at line %d of classCommand'],...
-                            Obj.Id, merr.message, merr.stack(end).line)
+                            Obj.Id, merr.message, merr.stack(1).line)
         end
     else
         % how to understand if there is going to be a reply without calling the
