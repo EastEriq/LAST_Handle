@@ -70,9 +70,10 @@ if ~isempty(Obj)
             Result = Obj.Messenger.query(QueryStr);
             % restore original CallbackRespond state
             Obj.Messenger.CallbackRespond=respond;
-        catch
-            Obj.reportError('invalid or uninitialized remote class %s',...
-                            Obj.Id)
+        catch merr
+            Obj.reportError(['invalid or uninitialized remote class %s:\n' ...
+                            '"%s" at line %d of classCommand'],...
+                            Obj.Id, merr.message, merr.stack(end).line)
         end
     else
         % how to understand if there is going to be a reply without calling the

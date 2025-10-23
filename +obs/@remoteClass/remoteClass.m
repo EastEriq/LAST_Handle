@@ -39,6 +39,12 @@ classdef remoteClass < obs.LAST_Handle
             delete(R.Messenger)
         end
         
+        % setters which update .Id
+        function set.RemoteName(R,name)
+            R.RemoteName=name;
+            R.Id=name;
+        end
+        
     end
     
 end
