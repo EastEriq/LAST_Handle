@@ -72,8 +72,8 @@ if ~isempty(Obj)
             Obj.Messenger.CallbackRespond=respond;
         catch merr
             Obj.reportError(['invalid or uninitialized remote class %s:\n' ...
-                            '"%s" at line %d of classCommand'],...
-                            Obj.Id, merr.message, merr.stack(1).line)
+                            '"%s" at line %d of %s'],Obj.Id,...
+                            merr.message, merr.stack(1).line, merr.stack(1).name)
         end
     else
         % how to understand if there is going to be a reply without calling the
