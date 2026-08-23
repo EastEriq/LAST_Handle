@@ -5,9 +5,9 @@ function replaceConfig(L,FileName,Keys,NewValues)
 %  in memory and performing string substitutions; it may not work for 
 %  complex datatypes
 %
-% Present use case, only to substitute numeric values, and only in existing
-%   files. To be considered, also write anew nonexisting files and nonexisting
-%   name-key pairs.
+% Present use case, only to substitute or write anew numeric or character
+%  values, and only in existing files. To be considered, also write anew
+%  nonexisting files and other kinds of name-key pairs.
 %
 % Input: FileName the yml config file to work on (without path)
 %        Keys, Values: cells of parameter names and their replacement
@@ -56,22 +56,42 @@ end
 % search each key in each of the lines of the file, and if found, replace
 %  the corresponding value
 for i=1:numel(Keys)
-    for j=1:numel(T)
+    newvalue='';
+    for j=1:numel(T) % scan line by line
         % simple parsing: count on that the first ':' and '#' are the delimiters
         entry=regexprep(T{j},':.*','');
-        if strcmp(Keys{i},strtrim(entry))
+        if  strcmp(Keys{i},strtrim(entry))
             remain=regexprep(T{j},'.*:','');
             if contains(remain,'#')
                 comment=regexprep(remain,'.*#','');
             else
                 comment='';
             end
-            newvalue=sprintf(['%' num2str(length(remain)-length(comment)-3) 's'],...
-                             NewValues{i});
+            if isempty(NewValues{i})
+                newvalue='[]';
+            elseif isnumeric(NewValues{i})
+                newvalue=sprintf(['%' num2str(length(remain)-length(comment)-3) 'f'],...
+                    NewValues{i});
+            else
+                newvalue=sprintf(['''%' num2str(length(remain)-length(comment)-3) 's'''],...
+                    NewValues{i});
+            end
             if ~isempty(comment)
                 T{j}=[entry, ': ', newvalue, ' #' comment];
             else
                 T{j}=[entry, ': ', newvalue];
+            end
+            break
+        end
+        % Key not present in the config file. Add it
+        if j==numel(T) && isempty(newvalue)
+            L.report('key %s not present in config file. Adding it\n',Keys{i})
+            if isempty(NewValues{i})
+                T{j+1}=[Keys{i}, ': []'];
+            elseif isnumeric(NewValues{i})
+                T{j+1}=[Keys{i}, ': ', sprintf('%f',NewValues{i})];
+            else
+                T{j+1}=[Keys{i}, ': ', sprintf("'%s'",NewValues{i})];
             end
         end
     end
